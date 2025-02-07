@@ -45,9 +45,9 @@ GDBs的错误实现和优化可能会引入逻辑错误。
 * bug链接：[Gremlin api "hasLabel" after "has" returns unexpected result · Issue #500 · ArcadeData/arcadedb](https://github.com/ArcadeData/arcadedb/issues/500)
 
 
-![LogicBugInArcadeDB#500](Pictures/LogicBugInArcadeDB_500.png)
+![LogicBugInArcadeDB#500](../Pictures/LogicBugInArcadeDB_500.png)
 
-![LogicBugInArcadeDB#500_graph](Pictures/LogicBugInArcadeDB_500_graph.png)
+![LogicBugInArcadeDB#500_graph](../Pictures/LogicBugInArcadeDB_500_graph.png)
 
 
 > [!NOTE]  ArcadeDB#500解释
