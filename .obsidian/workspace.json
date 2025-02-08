@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "PaperReading/PaperList.md",
+                "file": "PaperReading/Testing Gremlin-Based Graph Database Systems via Query Disassembling.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "PaperList"
+              "title": "Testing Gremlin-Based Graph Database Systems via Query Disassembling"
             }
           },
           {
@@ -34,23 +34,8 @@
               "icon": "lucide-file",
               "title": "Testing Graph Database Systems via Graph-Aware Metamorphic Relations"
             }
-          },
-          {
-            "id": "840582615c62bdbd",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "PaperReading/Testing Gremlin-Based Graph Database Systems via Query Disassembling.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "Testing Gremlin-Based Graph Database Systems via Query Disassembling"
-            }
           }
-        ],
-        "currentTab": 2
+        ]
       }
     ],
     "direction": "vertical"
@@ -193,23 +178,25 @@
       "command-palette:打开命令面板": false
     }
   },
-  "active": "840582615c62bdbd",
+  "active": "fcad0f87497962c6",
   "lastOpenFiles": [
-    "Pictures/QuDiOverview.png",
+    "Pictures/QuDi_t3.png",
     "PaperReading/Testing Gremlin-Based Graph Database Systems via Query Disassembling.md",
-    "Pictures/TraversalModelOfGremlin.png",
+    "Pictures/QuDi_fig13.png",
+    "Pictures/QuDi_fig12.png",
+    "Pictures/QuDi_fig11.png",
+    "Pictures/QuDi_fig10.png",
     "PaperReading/Testing Graph Database Systems via Graph-Aware Metamorphic Relations.md",
-    "Pictures/GrandOverview.png",
     "PaperReading/PaperList.md",
-    "Pictures/LogicBugInArcadeDB_500_graph.png",
+    "Pictures/JanusGraph_3200.png",
+    "Pictures/QuDiVennDiagram.png",
+    "Pictures/LogicBugsDetectedByQuDi.png",
+    "Pictures/QuDiBarrierStrategy.png",
+    "Pictures/TemporaryIDTableStrategy.png",
     "GraphDatabaseSystemTesting",
-    "Pictures/LogicBugInArcadeDB_500.png",
     "Overview.md",
     "PaperReading/Testing Graph Database Systems with Graph-State Persistence Oracle.md",
-    "Pictures/Pasted image 20250203094129.png",
-    "Pictures/f974e0a8f10d3246069ee094fc66169.png",
     "Pictures",
-    "Pictures/d9dd2d855470222454790668d80f1a8.png",
     "PaperReading"
   ]
 }
