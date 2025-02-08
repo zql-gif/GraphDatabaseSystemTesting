@@ -144,7 +144,7 @@ g.V().has('vl1', 'vp1', lt(2)).hasLabel('vl1', 'vl2', 'vl3').count()
 ### 3.1 Graph Database and Query Generation(基于Grand)
 基于 Grand 生成随机图数据库和随机 Gremlin 查询。
 #### 3.1.1 Graph database generation
-5. 随机生成图模式
+1. 随机生成图模式
 	* 顶点类型 `<label, propertyType* >`。随机生成标签名称和属性集合来生成顶点类型。
 	* 边类型 `<label, propertyType*, inVType, outVType>`。 随机生成一个标签名称和属性类型集来定义边类型，并随机选择一个顶点类型作为其入（出）顶点类型。
 	* `propertyType` 包含属性名称和数据类型。每个属性包含一个随机的属性名称和数据类型。
@@ -156,7 +156,7 @@ g.V().has('vl1', 'vp1', lt(2)).hasLabel('vl1', 'vl2', 'vl3').count()
 	* 在该类型下随机选择一个 Gremlin API（例如，`has()`）。其输出类型传递到下一次迭代中，作为下一次的输入类型。
 	* Gremlin API 参数：随机选取或生成属性名称和属性值。
 ### 3.2 Query Disassembling
-6. 原子图遍历（an atomic graph traversal）
+1. 原子图遍历（an atomic graph traversal）
 	* 定义：一组 Gremlin API 调用，这些调用返回一个类型为顶点（Vertex）或边（Edge）的结果集 。例如 `g.V()`、`has(lt())` 和 `hasLabel()`。
 	* 特性
 		* 一组API。
@@ -169,36 +169,36 @@ g.V().has('vl1', 'vp1', lt(2)).hasLabel('vl1', 'vl2', 'vl3').count()
 	* Gremlin Traversal Model中的原子图遍历
 		* Vertex，Edge：返回值满足
 		* Filter：保持其前一个图遍历的顶点或边类型。
-7. 查询分解算法
+2. 查询分解算法
 	*  atomicT：存储每一组原子图遍历，每次迭代清空。
 	* 第3行从 Q 中提取 Gremlin API 调用。
 	* 第 7-9 行：检查是否可以在其后进行拆解。
 	* 第 11-12 行：处理最后余留的API。
 ![AlgorithmQueryDisassembling](../Pictures/AlgorithmQueryDisassembling.png)
 ### 3.3 Atomic Traversal Execution
-8. 拆解查询（disassembled query）
+1. 拆解查询（disassembled query）
 	* 定义：对于TList 中的每个原子图遍历 T_i，为其构造Gremlin 查询 Q_i 以计算其中间结果 RS_T{i}。需要获取RS_T{i-1} 作为Q_i输入。
 	* 注意：对于起始遍历 `g.V()` 和 `g.E()`，我们不需要为其构造额外的查询。
 	* 三种执行策略，即参数传递策略（parameter passing strategy）、临时 ID 表策略（temporary ID table strategy） 和屏障策略（barrier strategy）。
 #### 3.3.1 Parameter Passing Strategy
-9. 数据结构：将原子图遍历 T_{i-1} 的中间查询结果存储到一个 ID 列表 idList 中，该列表包含一组组顶点 ID 或边 ID。
-10. 策略内容：遍历到 T_i 时，从 idList 中检索中间结果，并将其作为参数传递给 Gremlin API。
-11. 获取顶点和边的函数： `V(idList)`（根据顶点 ID 列表获取顶点）或 `E(idList)`（根据边 ID 列表获取边）。
-12. 示例
+1. 数据结构：将原子图遍历 T_{i-1} 的中间查询结果存储到一个 ID 列表 idList 中，该列表包含一组组顶点 ID 或边 ID。
+2. 策略内容：遍历到 T_i 时，从 idList 中检索中间结果，并将其作为参数传递给 Gremlin API。
+3. 获取顶点和边的函数： `V(idList)`（根据顶点 ID 列表获取顶点）或 `E(idList)`（根据边 ID 列表获取边）。
+4. 示例
 	* 将第二个原子图遍历的中间结果存储为一个顶点 ID 列表 `{1, 4}`（第 2 行）。
 	* 执行第三个原子图遍历时，首先检索顶点列表 `{1, 4}`，然后将其作为 `V()` 的参数，即 `g.V(1, 4)`。
 	* 在 `g.V(1, 4)` 后附加第三个原子图遍历 `hasLabel('person', 'book')`（第 3 行）。
 	* ![ParameterPassingStrategy](../Pictures/ParameterPassingStrategy.png)
-13. 策略优缺点
+5. 策略优缺点
 	* 可以有效地禁用复杂的查询组合和优化，从而高 效地检测逻辑错误。
 	* 受限于 `V()` 和 `E()` API 的参数大小，因此不适用于大型图数据库。例如，JanusGraph 限制 `V()` 或 `E()` 中 ID 列表的大小为 255。（实验表明，所有 25 个检测到的逻辑错误都可以通过少量图数据触发，即在图数据库中最多包含 3 个顶点和 2 条边。）
 #### 3.3.2 Temporary ID Table Strategy
-14. 数据结构：将中间结果存储到一个临时表 vList中。从 T_{i-1} 的中间结果 RS_T{i-1} 中提取一个 ID 列表 idList，**然后将列表中的每个 ID 存储到图数据库中新创建的一个对应顶点中**，这样得到一个新创建的顶点列表 vList。vList 中的每个顶点都有一个标签 `IDs`，并且有一个属性 `id` 来存储 idList 中的 ID。
-15. 策略内容
+1. 数据结构：将中间结果存储到一个临时表 vList中。从 T_{i-1} 的中间结果 RS_T{i-1} 中提取一个 ID 列表 idList，**然后将列表中的每个 ID 存储到图数据库中新创建的一个对应顶点中**，这样得到一个新创建的顶点列表 vList。vList 中的每个顶点都有一个标签 `IDs`，并且有一个属性 `id` 来存储 idList 中的 ID。
+2. 策略内容
 	* 执行图遍历 T_i 时，**构造一个查询，借助 vList 来检索 T_{i-1} 的结果集，并继续执行 T_i**。
 	* **需要构建了一个复杂的 Gremlin 查询来检索中间结果。**
 	* **使用完这些表示结果集的中间顶点后会删除它们。**
-16. 示例（以 `hasLabel('person', 'book')`为例）
+3. 示例（以 `hasLabel('person', 'book')`为例）
 	* 第2-3行：将 T_2 的结果集 v:{1,4} 后存储到一个顶点标签为 `IDs` 的表中。
 	* 第6行：从图数据库中获取所有标签为 `'IDs'` 的顶点，并提取这些顶点的 `'id'` 属性值，将这些属性值命名为 `vList`。
 	* 第7-9行：从图数据库中的所有顶点中检索那些 ID 在 vList 中的顶点（`where` 子句执行一个过滤条件，比较 `'vList'` 中的值与 `'V_ID'` 是否相等。`P.eq('V_ID')` 是一个条件操作符，表示 `'vList'` 中的元素必须等于 `'V_ID'`）。
@@ -206,35 +206,35 @@ g.V().has('vl1', 'vp1', lt(2)).hasLabel('vl1', 'vl2', 'vl3').count()
 	* 第13行：删除创建的顶点。
 	* ![TemporaryIDTableStrategy](../Pictures/TemporaryIDTableStrategy.png)
 	* ![QuDiOverview](../Pictures/QuDiOverview.png)
-17. 策略优缺点
+4. 策略优缺点
 	* 可以避免参数传递策略的缺点，例如 Gremlin API 中 `V()` 和 `E()` 参数大小的限制。
 	* 思路可以在其他数据库系统中普遍应用（见第 5 节）。
 	* 然而，这种策略**有更高的时间代价**，因为需要更多的操作来存储或删除图数据库中的中间结果。
 	* 引入了用于检索中间结果的额外原子图遍历，可能会漏掉与这些遍历相关的 bug。
 #### 3.3.3 Barrier Strategy
-18. 策略内容
+1. 策略内容
 	* 核心思想：Gremlin API 中的 `barrier()` 可以将 Gremlin 查询的lazy pipeline转换为bulk-synchronous pipeline（批量同步）。
 	* **在 `barrier()` 操作之前的图遍历需要先执行，然后才能进行 `barrier()` 操作之后的图遍历。**
 	* 在原子图遍历 `Tᵢ₋₁` 后附加一个 `barrier()` 操作时，**`barrier()` 操作可以禁用原 Gremlin 查询中 `Tᵢ₋₁` 和 `Tᵢ` 的组装。**（注，最后一个原子图遍历后不需要附加 `barrier()` 操作）
-19. 示例
+2. 示例
 	* 在第一个和第二个原子图遍历后附加 `barrier()` 操作，**构造拆解后的查询**，执行它以计算拆解后的原子图遍历序列的结果集。
 	* ![QuDiBarrierStrategy](../Pictures/QuDiBarrierStrategy.png)
-20. 策略优缺点
+3. 策略优缺点
 	* 该策略可以禁用 Gremlin API 的组装并防止一些优化的生效
 	* 但它本身引入了批量操作和批量优化（当多次接触到相同的元素时，`barrier()` 操作只能执行这个元素一次）。因此，这个策略无法像其他两种执行策略那样禁用更复杂的查询组装和优化，因此某些逻辑错误可能会被遗漏。（在实验中通过该策略检测到的一个错误，其他两种策略无法检测到。障碍策略可以补充其他两种策略。）
 ## 4 Evaluation
-21. Grand 上实现了 QuDi，代码大约有 1000 行 Java 代码。
-22. 为 Grand 中使用的遍历模型添加了一些通用的 Gremlin API，例如 `sample()` 和 `barrier()`。
-23. 
+1. Grand 上实现了 QuDi，代码大约有 1000 行 Java 代码。
+2. 为 Grand 中使用的遍历模型添加了一些通用的 Gremlin API，例如 `sample()` 和 `barrier()`。
+3. 
 	* RQ1：QuDi 在检测实际图数据库中的逻辑错误方面有多有效？ 
 	* RQ2：QuDi 中提出的三种执行策略在检测逻辑错误方面表现如何？ 
 	* RQ3：QuDi 与现有的最先进方法在错误检测能力方面有何比较？
 ### 4.1 Methodology
 ####  4.1.1 Target GDBs
-24. 目标Gremlin-based GDBs：Neo4j 3.4.11（与最新的Neo4j-Gremlin 3.6.1版本）、OrientDB 3.2.10、JanusGraph 0.6.2、HugeGraph 0.12.0、TinkerGraph 3.6.1和ArcadeDB 22.8.1。
+1. 目标Gremlin-based GDBs：Neo4j 3.4.11（与最新的Neo4j-Gremlin 3.6.1版本）、OrientDB 3.2.10、JanusGraph 0.6.2、HugeGraph 0.12.0、TinkerGraph 3.6.1和ArcadeDB 22.8.1。
 #### 4.1.2 Testing methodology
-25. 测试10轮：使用三种执行策略，分别对每个目标图数据库进行10轮测试。
-26. Graph Database and Query Generation：为目标图数据库随机创建一个最多包含50个顶点和100条边的图数据库，并随机生成1,000个Gremlin查询。
+1. 测试10轮：使用三种执行策略，分别对每个目标图数据库进行10轮测试。
+2. Graph Database and Query Generation：为目标图数据库随机创建一个最多包含50个顶点和100条边的图数据库，并随机生成1,000个Gremlin查询。
 #### 4.1.3 Simplify test cases
 对于每个报告的逻辑错误，手动（删减每个遍历步骤，看是否依旧能触发）将测试用例简化为更小的用例，以便更容易理解和诊断错误。
 #### 4.1.4 Deduplicate test cases
